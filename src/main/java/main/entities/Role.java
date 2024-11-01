@@ -1,4 +1,4 @@
-package alex.jwt.user;
+package main.entities;
 
 public enum Role {
     USER,
