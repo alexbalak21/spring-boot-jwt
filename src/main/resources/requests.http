@@ -20,7 +20,15 @@ Content-Type: application/json
 ### TOKEN Request
 GET http://localhost:8080/users/me
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGV4QGVtYWlsLmNvbSIsImlhdCI6MTczMDg5OTk2NSwiZXhwIjoxNzMwOTAzNTY1fQ.gqom00X7Z_OvlP_aPQHTvLAgkISgdzLXl5xedthV9Po
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGV4QGVtYWlsLmNvbSIsImlhdCI6MTczMDkwNDExNywiZXhwIjoxNzMwOTA3NzE3fQ.xELRj0xul_z8SkVzAaV50PoI2QB58qjv72dHHY2Jpq0
+
+{
+}
+
+### TOKEN Request USERES
+GET http://localhost:8080/users/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGV4QGVtYWlsLmNvbSIsImlhdCI6MTczMDkwNDExNywiZXhwIjoxNzMwOTA3NzE3fQ.xELRj0xul_z8SkVzAaV50PoI2QB58qjv72dHHY2Jpq0
 
 {
 }
