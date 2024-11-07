@@ -20,15 +20,25 @@ public class JwtService {
     @Value("${security.jwt.secret-key}")
     private String secretKey;
 
+    @Value("${security.jwt.refresh-secret-key}")
+    private String refreshSecretKey;
+
     @Value("${security.jwt.expiration-time}")
     private long jwtExpiration;
 
+    @Value("${security.jwt.refresh-expiration-time}")
+    private long refreshExpiration;
+
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        return extractClaim(token, Claims::getSubject, secretKey);
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
+    public String extractRefreshUsername(String token) {
+        return extractClaim(token, Claims::getSubject, refreshSecretKey);
+    }
+
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver, String key) {
+        final Claims claims = extractAllClaims(token, key);
         return claimsResolver.apply(claims);
     }
 
@@ -37,17 +47,28 @@ public class JwtService {
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return buildToken(extraClaims, userDetails, jwtExpiration);
+        return buildToken(extraClaims, userDetails, jwtExpiration, secretKey);
     }
 
-    public long getExpirationTime() {
-        return jwtExpiration;
+    public String generateRefreshToken(UserDetails userDetails) {
+        return buildToken(new HashMap<>(), userDetails, refreshExpiration, refreshSecretKey);
+    }
+
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token, secretKey);
+    }
+
+    public boolean isRefreshTokenValid(String token, UserDetails userDetails) {
+        final String username = extractRefreshUsername(token);
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token, refreshSecretKey);
     }
 
     private String buildToken(
             Map<String, Object> extraClaims,
             UserDetails userDetails,
-            long expiration
+            long expiration,
+            String key
     ) {
         return Jwts
                 .builder()
@@ -55,34 +76,29 @@ public class JwtService {
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .signWith(getSignInKey(key), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    private boolean isTokenExpired(String token, String key) {
+        return extractExpiration(token, key).before(new Date());
     }
 
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    private Date extractExpiration(String token, String key) {
+        return extractClaim(token, Claims::getExpiration, key);
     }
 
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
-
-    private Claims extractAllClaims(String token) {
+    private Claims extractAllClaims(String token, String key) {
         return Jwts
                 .parserBuilder()
-                .setSigningKey(getSignInKey())
+                .setSigningKey(getSignInKey(key))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
 
-    private Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+    private Key getSignInKey(String key) {
+        byte[] keyBytes = Decoders.BASE64.decode(key);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }
