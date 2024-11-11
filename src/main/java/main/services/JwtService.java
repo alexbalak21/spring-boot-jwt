@@ -50,6 +50,10 @@ public class JwtService {
         return buildToken(extraClaims, userDetails, jwtExpiration, secretKey);
     }
 
+    public long getExpirationTime() {
+        return jwtExpiration;
+    }
+
     public String generateRefreshToken(UserDetails userDetails) {
         return buildToken(new HashMap<>(), userDetails, refreshExpiration, refreshSecretKey);
     }
