@@ -67,6 +67,9 @@ public class JwtService {
         final String username = extractRefreshUsername(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token, refreshSecretKey);
     }
+    public long getRefreshExpirationTime() {
+        return refreshExpiration;
+    }
 
     private String buildToken(
             Map<String, Object> extraClaims,

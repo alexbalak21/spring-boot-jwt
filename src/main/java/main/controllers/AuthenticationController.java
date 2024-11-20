@@ -27,7 +27,6 @@ public class AuthenticationController {
     @PostMapping("/signup")
     public ResponseEntity<User> register(@RequestBody RegisterUserDto registerUserDto) {
         User registeredUser = authenticationService.signup(registerUserDto);
-
         return ResponseEntity.ok(registeredUser);
     }
 
@@ -36,10 +35,17 @@ public class AuthenticationController {
         User authenticatedUser = authenticationService.authenticate(loginUserDto);
 
         String jwtToken = jwtService.generateToken(authenticatedUser);
+        String refreshToken = jwtService.generateRefreshToken(authenticatedUser);
 
         LoginResponse loginResponse = new LoginResponse();
+        //CREATING AUTHENTICATION TOKEN
         loginResponse.setToken(jwtToken);
         loginResponse.setExpiresIn(jwtService.getExpirationTime());
+        //CREATING REFRESH TOKEN
+        loginResponse.setRefreshToken(refreshToken);
+        loginResponse.setRefreshExpiresIn(jwtService.getRefreshExpirationTime());
+
+
 
         return ResponseEntity.ok(loginResponse);
     }
