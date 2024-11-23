@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -21,5 +22,14 @@ public class UserService {
         userRepository.findAll().forEach(users::add);
 
         return users;
+    }
+    public UUID generateUuid(String email) {
+        UUID uuid = UUID.randomUUID();
+        userRepository.updateUserUuidByEmail(email, uuid);
+        return uuid;
+    }
+
+    public void resetUuid(String email) {
+        userRepository.updateUserUuidByEmail(email, null);
     }
 }

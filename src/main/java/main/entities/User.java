@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Table(name = "users")
 @Entity
@@ -23,6 +24,10 @@ public class User implements UserDetails {
 
     @Column(unique = true, length = 100, nullable = false)
     private String email;
+
+    @Column(unique = true)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID uid;
 
     @Column(nullable = false)
     private String password;
@@ -138,5 +143,13 @@ public class User implements UserDetails {
         this.password = password;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 }

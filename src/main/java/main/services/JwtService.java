@@ -5,10 +5,12 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -54,10 +56,6 @@ public class JwtService {
         return jwtExpiration;
     }
 
-    public String generateRefreshToken(UserDetails userDetails) {
-        return buildToken(new HashMap<>(), userDetails, refreshExpiration, refreshSecretKey);
-    }
-
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token, secretKey);
@@ -67,6 +65,7 @@ public class JwtService {
         final String username = extractRefreshUsername(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token, refreshSecretKey);
     }
+
     public long getRefreshExpirationTime() {
         return refreshExpiration;
     }
@@ -84,6 +83,16 @@ public class JwtService {
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(key), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String buildRefreshToken(UUID uuid) {
+        return Jwts
+                .builder()
+                .claim("uuid", uuid.toString())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + refreshExpiration))
+                .signWith(getSignInKey(refreshSecretKey), SignatureAlgorithm.HS256)
                 .compact();
     }
 
