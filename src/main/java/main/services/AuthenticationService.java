@@ -9,6 +9,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class AuthenticationService {
     private final UserRepository userRepository;
@@ -42,10 +44,14 @@ public class AuthenticationService {
                 new UsernamePasswordAuthenticationToken(
                         input.getEmail(),
                         input.getPassword()
-                )
-        );
-
+                ));
         return userRepository.findByEmail(input.getEmail())
                 .orElseThrow();
+    }
+
+    public UUID generateUuid(String email) {
+        UUID uuid = UUID.randomUUID();
+        userRepository.updateUserUuidByEmail(email, uuid);
+        return uuid;
     }
 }

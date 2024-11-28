@@ -42,14 +42,12 @@ public class AuthenticationController {
         String refreshToken = jwtService.generateRefreshToken(authenticatedUser);
 
         LoginResponse loginResponse = new LoginResponse();
-        //CREATING AUTHENTICATION TOKEN
+
         loginResponse.setToken(jwtToken);
         loginResponse.setExpiresIn(jwtService.getExpirationTime());
-        //CREATING REFRESH TOKEN
+
         loginResponse.setRefreshToken(refreshToken);
         loginResponse.setRefreshExpiresIn(jwtService.getRefreshExpirationTime());
-
-
 
         return ResponseEntity.ok(loginResponse);
     }
