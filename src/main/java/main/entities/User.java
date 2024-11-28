@@ -145,11 +145,11 @@ public class User implements UserDetails {
         this.updatedAt = updatedAt;
     }
 
-    public String getUid() {
+    public UUID getUid() {
         return uid;
     }
 
-    public void setUid(String uid) {
+    public void setUid(UUID uid) {
         this.uid = uid;
     }
 }

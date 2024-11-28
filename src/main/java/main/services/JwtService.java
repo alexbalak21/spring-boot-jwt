@@ -13,12 +13,14 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
+import main.entities.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
 public class JwtService {
+    private final UserService userService;
     @Value("${security.jwt.secret-key}")
     private String secretKey;
 
@@ -30,6 +32,10 @@ public class JwtService {
 
     @Value("${security.jwt.refresh-expiration-time}")
     private long refreshExpiration;
+
+    public JwtService(UserService userService) {
+        this.userService = userService;
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject, secretKey);
@@ -70,6 +76,10 @@ public class JwtService {
         return refreshExpiration;
     }
 
+    public String generateRefreshToken(User authenticatedUser) {
+        return buildRefreshToken(userService.generateUuid(authenticatedUser.getEmail()));
+    }
+
     private String buildToken(
             Map<String, Object> extraClaims,
             UserDetails userDetails,
@@ -85,6 +95,7 @@ public class JwtService {
                 .signWith(getSignInKey(key), SignatureAlgorithm.HS256)
                 .compact();
     }
+
 
     public String buildRefreshToken(UUID uuid) {
         return Jwts
