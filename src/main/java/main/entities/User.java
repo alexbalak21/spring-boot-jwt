@@ -26,7 +26,6 @@ public class User implements UserDetails {
     private String email;
 
     @Column(unique = true)
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID uid;
 
     @Column(nullable = false)
