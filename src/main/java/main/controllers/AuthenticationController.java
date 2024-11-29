@@ -5,6 +5,7 @@ import main.dtos.LoginUserDto;
 import main.dtos.RegisterUserDto;
 import main.responses.LoginResponse;
 import main.services.AuthenticationService;
+import main.services.JwtRefreshService;
 import main.services.JwtService;
 import main.services.UserService;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +22,13 @@ public class AuthenticationController {
     private final JwtService jwtService;
     private final AuthenticationService authenticationService;
     private  final UserService userService;
+    private final JwtRefreshService jwtRefreshService;
 
-    public AuthenticationController(JwtService jwtService, AuthenticationService authenticationService, UserService userService) {
+    public AuthenticationController(JwtService jwtService, AuthenticationService authenticationService, UserService userService, JwtRefreshService jwtRefreshService) {
         this.jwtService = jwtService;
         this.authenticationService = authenticationService;
         this.userService = userService;
+        this.jwtRefreshService = jwtRefreshService;
     }
 
     @PostMapping("/signup")
@@ -39,7 +42,7 @@ public class AuthenticationController {
         User authenticatedUser = authenticationService.authenticate(loginUserDto);
 
         String jwtToken = jwtService.generateToken(authenticatedUser);
-        String refreshToken = jwtService.generateRefreshToken(authenticatedUser);
+        String refreshToken = jwtRefreshService.generateRefreshToken(authenticatedUser);
 
         LoginResponse loginResponse = new LoginResponse();
 
