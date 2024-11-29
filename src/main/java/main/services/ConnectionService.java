@@ -33,7 +33,15 @@ public class ConnectionService {
         return false;
     }
 
-    public Optional<UUID> renewConnection (Integer userId, UUID uuid) {
+    public Optional<UUID> renewConnection (UUID connectionId, String userEmail) {
+        if (connectionId == null) return Optional.empty();
+        Integer uuid = connectionRepository.findUserIdByConnectionId(connectionId).orElse(null);
+        if (uuid == null) return Optional.empty();
+        Integer userId = userRepository.getIdByEmail(userEmail).orElse(null);
+        if (userId == null) return Optional.empty();
+        if (!userId.equals(uuid)) return Optional.empty();
+
+
         if (!checkConnection(userId, uuid)) return Optional.empty();
         UUID newUuid = UUID.randomUUID();
         connectionRepository.updateConnectionIdByUserId(userId, newUuid);
