@@ -78,10 +78,6 @@ public class JwtService {
         return refreshExpiration;
     }
 
-    // Generates a refresh token for the authenticated user
-    public String generateRefreshToken(User authenticatedUser) {
-        return buildRefreshToken(userService.generateUuid(authenticatedUser.getEmail()));
-    }
 
     // Builds a JWT token with the specified claims, user details, expiration time, and key
     private String buildToken(
@@ -100,19 +96,9 @@ public class JwtService {
                 .compact();
     }
 
-    // Builds a refresh token with the specified UUID
-    public String buildRefreshToken(UUID uuid) {
-        return Jwts
-                .builder()
-                .claim("uuid", uuid.toString())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + refreshExpiration))
-                .signWith(getSignInKey(refreshSecretKey), SignatureAlgorithm.HS256)
-                .compact();
-    }
 
     // Checks if the JWT token is expired
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         return extractExpiration(token, secretKey).before(new Date());
     }
 

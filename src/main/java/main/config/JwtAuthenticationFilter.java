@@ -72,10 +72,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             null,
                             userDetails.getAuthorities()
                     );
+                    //CHECKS IF THE TOKEN IS EXPIRED
+                    if (jwtService.isTokenExpired(jwt)) {
+                        final String refreshToken = request.getHeader("RefreshToken");
+
+
+                    }
+
 
                     // Extract the refresh token from the request (e.g., from a header or request body)
-                    final String refreshToken = request.getHeader("RefreshToken");
-                    
+
+
 
                     // Set the authentication details
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

@@ -15,6 +15,11 @@ import java.util.UUID;
 public interface UserRepository extends CrudRepository<User, Integer> {
     Optional<User> findByEmail(String email);
 
+    //GET ID BY EMAIL
+    @Query("SELECT u.id FROM User u WHERE u.email = :email")
+    @Transactional
+    Optional<Integer> getIdByEmail(@Param("email") String email);
+
     @Modifying
     @Transactional
     @Query("UPDATE User user SET user.uid = :uuid WHERE user.email = :email")
