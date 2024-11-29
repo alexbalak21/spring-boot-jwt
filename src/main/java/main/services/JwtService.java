@@ -1,3 +1,4 @@
+
 package main.services;
 
 import io.jsonwebtoken.Claims;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class JwtService {
     private final UserService userService;
+
+    // Injecting secret keys and expiration times from application properties
     @Value("${security.jwt.secret-key}")
     private String secretKey;
 
@@ -33,53 +36,54 @@ public class JwtService {
     @Value("${security.jwt.refresh-expiration-time}")
     private long refreshExpiration;
 
+    // Constructor to initialize UserService
     public JwtService(UserService userService) {
         this.userService = userService;
     }
 
+    // Extracts the username from the JWT token
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject, secretKey);
     }
 
-    public String extractRefreshUsername(String token) {
-        return extractClaim(token, Claims::getSubject, refreshSecretKey);
-    }
-
+    // Extracts a specific claim from the JWT token
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver, String key) {
         final Claims claims = extractAllClaims(token, key);
         return claimsResolver.apply(claims);
     }
 
+    // Generates a JWT token for the given user details
     public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
 
+    // Generates a JWT token with additional claims
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return buildToken(extraClaims, userDetails, jwtExpiration, secretKey);
     }
 
+    // Returns the expiration time for the JWT token
     public long getExpirationTime() {
         return jwtExpiration;
     }
 
+    // Validates the JWT token against the user details
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token, secretKey);
+        return (username.equals(userDetails.getUsername()));
     }
 
-    public boolean isRefreshTokenValid(String token, UserDetails userDetails) {
-        final String username = extractRefreshUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token, refreshSecretKey);
-    }
-
+    // Returns the expiration time for the refresh token
     public long getRefreshExpirationTime() {
         return refreshExpiration;
     }
 
+    // Generates a refresh token for the authenticated user
     public String generateRefreshToken(User authenticatedUser) {
         return buildRefreshToken(userService.generateUuid(authenticatedUser.getEmail()));
     }
 
+    // Builds a JWT token with the specified claims, user details, expiration time, and key
     private String buildToken(
             Map<String, Object> extraClaims,
             UserDetails userDetails,
@@ -96,7 +100,7 @@ public class JwtService {
                 .compact();
     }
 
-
+    // Builds a refresh token with the specified UUID
     public String buildRefreshToken(UUID uuid) {
         return Jwts
                 .builder()
@@ -107,14 +111,17 @@ public class JwtService {
                 .compact();
     }
 
-    private boolean isTokenExpired(String token, String key) {
-        return extractExpiration(token, key).before(new Date());
+    // Checks if the JWT token is expired
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token, secretKey).before(new Date());
     }
 
+    // Extracts the expiration date from the JWT token
     private Date extractExpiration(String token, String key) {
         return extractClaim(token, Claims::getExpiration, key);
     }
 
+    // Extracts all claims from the JWT token
     private Claims extractAllClaims(String token, String key) {
         return Jwts
                 .parserBuilder()
@@ -124,6 +131,7 @@ public class JwtService {
                 .getBody();
     }
 
+    // Decodes the secret key and returns it as a Key object
     private Key getSignInKey(String key) {
         byte[] keyBytes = Decoders.BASE64.decode(key);
         return Keys.hmacShaKeyFor(keyBytes);

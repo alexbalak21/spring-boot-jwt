@@ -47,9 +47,4 @@ public class JwtRefreshService {
                 .signWith(getRefreshSignInKey(refreshSecretKey), SignatureAlgorithm.HS256)
                 .compact();
     }
-
-
-    public String renewToken(String refreshToken) {
-
-    }
 }

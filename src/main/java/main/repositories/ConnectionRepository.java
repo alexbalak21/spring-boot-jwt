@@ -12,5 +12,5 @@ public interface ConnectionRepository extends CrudRepository<Connection, Integer
     void  deleteByuserId(Integer userId);
 
     //GETS userId by connectionId
-    Optional <Integer> findByConnectionId(UUID connectionId);
+    Optional <Integer> findUserIdByConnectionId(UUID connectionId);
 }

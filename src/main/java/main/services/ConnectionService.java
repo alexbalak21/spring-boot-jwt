@@ -23,7 +23,7 @@ public class ConnectionService {
     }
 
     public boolean checkConnection (Integer userId, UUID uuid) {
-        return connectionRepository.findByConnectionId(uuid).isPresent();
+        return connectionRepository.findUserIdByConnectionId(uuid).isPresent();
     }
 
     public Optional<UUID> renewConnection (Integer userId, UUID uuid) {
