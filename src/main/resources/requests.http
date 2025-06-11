@@ -20,7 +20,7 @@ Content-Type: application/json
 ### TOKEN Request
 GET http://localhost:8080/users/me
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGV4QGVtYWlsLmNvbSIsImlhdCI6MTc0OTY0MzQ5MSwiZXhwIjoxNzQ5NjUwNjkxfQ.ycqfmdfnFOszS-42BdTGrvbIxebHjZBVWv0kqK0A7gE
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGV4QGVtYWlsLmNvbSIsImlhdCI6MTc0OTY0NDc0MSwiZXhwIjoxNzQ5NjUxOTQxfQ.Vo8ZqEHPVmQPVFsyTWRoO1aH5UgDF2qCwk2wAX1Gdcc
 
 {
 }
